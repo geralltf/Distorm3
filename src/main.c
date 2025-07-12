@@ -16,7 +16,7 @@
 // Play with this value for performance...
 #define MAX_INSTRUCTIONS (1000)
 
-bool FileReadString(char* filename, void** filebuffer, size_t* file_length)
+bool FileReadString(char* filename, unsigned char** filebuffer, size_t* file_length)
 {
 	char* buffer = *filebuffer;
 	size_t length;
