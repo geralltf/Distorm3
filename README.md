@@ -19,4 +19,4 @@ RTFM, the wiki has plenty of info.
 
 UPDATE: Integrated pe-parse with diStorm3 to provide a means to utilise the binary stream disassembler on .sections within PE/COFF executables and libraries. 
 
-UPDATE #2: To compile the project head to the src directory make sure you have g++ installed then 'make all' and 'distorm3 -b64 hello.exe'
+UPDATE #2: To compile the project head to the src directory make sure you have g++ and make installed then 'make all' and './distorm3 -b64 hello.exe'
