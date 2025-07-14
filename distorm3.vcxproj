@@ -129,28 +129,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\decoder.c" />
     <ClCompile Include="src\distorm.c" />
     <ClCompile Include="src\instructions.c" />
     <ClCompile Include="src\insts.c" />
-    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mnemonics.c" />
     <ClCompile Include="src\operands.c" />
+    <ClCompile Include="src\parse.cpp" />
     <ClCompile Include="src\prefix.c" />
     <ClCompile Include="src\textdefs.c" />
+    <ClCompile Include="src\unicode_winapi.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\argh.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\decoder.h" />
     <ClInclude Include="src\distorm.h" />
     <ClInclude Include="src\instructions.h" />
     <ClInclude Include="src\insts.h" />
     <ClInclude Include="src\mnemonics.h" />
+    <ClInclude Include="src\nt-headers.h" />
     <ClInclude Include="src\operands.h" />
+    <ClInclude Include="src\parse.h" />
     <ClInclude Include="src\prefix.h" />
     <ClInclude Include="src\textdefs.h" />
+    <ClInclude Include="src\to_string.h" />
     <ClInclude Include="src\wstring.h" />
     <ClInclude Include="src\x86defs.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Makefile" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

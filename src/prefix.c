@@ -65,7 +65,7 @@ void prefixes_ignore_all(_PrefixState* ps)
 {
 	int i;
 	for (i = 0; i < PFXIDX_MAX; i++)
-		prefixes_ignore(ps, i);
+		prefixes_ignore(ps, (_PrefixIndexer)i);
 }
 
 /* Calculates which prefixes weren't used and accordingly sets the bits in the unusedPrefixesMask. */
