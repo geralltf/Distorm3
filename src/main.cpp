@@ -727,14 +727,14 @@ int main(int argc, char** argv)
 
         std::cout << std::endl;
 
-        // DECODER.
-        printf("bits: %d\nfilename: %s\norigin: ", dt == Decode16Bits ? 16 : dt == Decode32Bits ? 32 : 64, argv[param]);
-#ifdef SUPPORT_64BIT_OFFSET
-        if (dt != Decode64Bits) printf("%08I64x\n", offset);
-        else printf("%016I64x\n", offset);
-#else
-        printf("%08x\n", offset);
-#endif
+//        // DECODER.
+//        printf("bits: %d\nfilename: %s\norigin: ", dt == Decode16Bits ? 16 : dt == Decode32Bits ? 32 : 64, argv[param]);
+//#ifdef SUPPORT_64BIT_OFFSET
+//        if (dt != Decode64Bits) printf("%08I64x\n", offset);
+//        else printf("%016I64x\n", offset);
+//#else
+//        printf("%08x\n", offset);
+//#endif
 
         // Decode the buffer at given offset (virtual address).
         //while (1) {
