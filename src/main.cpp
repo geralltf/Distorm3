@@ -716,7 +716,7 @@ int main(int argc, char** argv)
 
         buf = (unsigned char*)malloc(sizeof(unsigned char) * buffer_size);
 
-        std::cout << "ReadBytesAtVA(): " << std::endl;
+        std::cout << "ReadBytesAtVA(): buffer_size: " << buffer_size << " entryPoint: " << entryPoint << std::endl;
         if (ReadBytesAtVA(p, entryPoint, buf, buffer_size))
         {
             std::cout << "ReadBytesAtVA(): worked " << std::endl;
