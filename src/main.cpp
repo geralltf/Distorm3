@@ -515,7 +515,7 @@ int main(int argc, char** argv)
 	}
 	if (param + 1 == argc - 1) { // extra param?
 #ifdef SUPPORT_64BIT_OFFSET
-		offset = _strtoui64(argv[param + 1], &errch, 16);
+		offset = strtoull(argv[param + 1], &errch, 16); // _strtoui64
 #else
 		offset = strtoul(argv[param + 1], &errch, 16);
 #endif
