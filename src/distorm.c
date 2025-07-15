@@ -410,7 +410,7 @@ skipOperands:
 		distorm_format32(&ci, (_DInst*)&result[i], &result[i]);
 #endif
 	}
-
+	printf("distorm_decode64(): -: done\n");
 	return res;
 }
 

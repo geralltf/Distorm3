@@ -752,6 +752,7 @@ int main(int argc, char** argv)
                 return -4;
             }
 
+            printf("decoding.. printing\n");
             for (i = 0; i < decodedInstructionsCount; i++) {
     #ifdef SUPPORT_64BIT_OFFSET
                 printf("%0*I64x (%02d) %-24s %s%s%s\n", dt != Decode64Bits ? 8 : 16, decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
@@ -759,7 +760,7 @@ int main(int argc, char** argv)
                 printf("%08x (%02d) %-24s %s%s%s\n", decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
     #endif
             }
-
+            printf("decoding.. printing done.\n");
             //if (res == DECRES_SUCCESS) break; // All instructions were decoded.
             //else if (decodedInstructionsCount == 0) break;
 
