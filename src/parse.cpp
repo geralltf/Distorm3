@@ -2847,8 +2847,14 @@ namespace peparse {
                 //result = false;
             }
         }
-        std::cout << std::endl;
-        std::cout << "result: " << result << std::endl;
+
+        //for (i = 0; i < size_buffer; i++)
+        //{
+        //    std::cout << " " << std::hex << b;
+        //}
+
+        //std::cout << std::endl;
+        //std::cout << "result: " << result << std::endl;
         return result;
     }
 

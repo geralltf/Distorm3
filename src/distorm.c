@@ -9,7 +9,6 @@ Copyright (C) 2003-2021 Gil Dabah
 This library is licensed under the BSD license. See the file COPYING.
 */
 
-
 #include "distorm.h"
 #include "config.h"
 #include "decoder.h"
@@ -28,7 +27,7 @@ This library is licensed under the BSD license. See the file COPYING.
 	if (usedInstructionsCount == NULL) {
 		return DECRES_SUCCESS;
 	}
-
+	
 	if ((ci == NULL) ||
 		(ci->codeLen < 0) ||
 		((unsigned)ci->dt > (unsigned)Decode64Bits) ||
@@ -388,6 +387,8 @@ skipOperands:
 	 * It's a bit ugly, I have to admit, but worth it.
 	 */
 
+	printf("distorm_decode64(): codeOffset: %d\n", codeOffset);
+
 	ci.codeOffset = codeOffset;
 	ci.code = code;
 	ci.codeLen = codeLen;
@@ -397,7 +398,9 @@ skipOperands:
 	else if (dt == Decode32Bits) ci.addrMask = 0xffffffff;
 	else ci.addrMask = (_OffsetType)-1;
 
+	printf("distorm_decode64(): -decode_internal(): before\n");
 	res = decode_internal(&ci, TRUE, (_DInst*)result, maxInstructions, usedInstructionsCount);
+	printf("distorm_decode64(): -decode_internal(): after\n");
 	instsCount = *usedInstructionsCount;
 	for (i = 0; i < instsCount; i++) {
 		/* distorm_format is optimized and can work with same input/output buffer in-place. */

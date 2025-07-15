@@ -727,7 +727,7 @@ int main(int argc, char** argv)
         }
         offset = entryPoint;
 
-        std::cout << std::endl;
+        //std::cout << std::endl;
 
         std::cout << "distorm_decode(): " << std::endl;
 
