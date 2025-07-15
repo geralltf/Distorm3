@@ -707,6 +707,7 @@ int main(int argc, char** argv)
 
         uint32_t buffer_size;
 
+        std::cout << "ReadSectionSize(): " << std::endl;
         buffer_size = ReadSectionSize(p, entryPoint);
 
         filesize = buffer_size;
@@ -715,17 +716,20 @@ int main(int argc, char** argv)
 
         buf = (unsigned char*)malloc(sizeof(unsigned char) * buffer_size);
 
+        std::cout << "ReadBytesAtVA(): " << std::endl;
         if (ReadBytesAtVA(p, entryPoint, buf, buffer_size))
         {
-
+            std::cout << "ReadBytesAtVA(): worked " << std::endl;
         }
         else 
         {
-
+            std::cout << "ReadBytesAtVA(): did not work " << std::endl;
         }
         offset = entryPoint;
 
         std::cout << std::endl;
+
+        std::cout << "distorm_decode(): " << std::endl;
 
 //        // DECODER.
 //        printf("bits: %d\nfilename: %s\norigin: ", dt == Decode16Bits ? 16 : dt == Decode32Bits ? 32 : 64, argv[param]);
