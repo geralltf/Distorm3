@@ -2841,10 +2841,10 @@ namespace peparse {
             {
                 buffer[i] = b;
 
-                std::cout << " " << b;
+                //std::cout << " " << b;
             }
             else {
-                result = false;
+                //result = false;
             }
         }
         std::cout << std::endl;
