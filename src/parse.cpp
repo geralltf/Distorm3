@@ -2840,11 +2840,15 @@ namespace peparse {
             if (readByte(s.sectionData, offset + i, b))
             {
                 buffer[i] = b;
+
+                std::cout << " " << b;
             }
             else {
                 result = false;
             }
         }
+        std::cout << std::endl;
+        std::cout << "result: " << result << std::endl;
         return result;
     }
 
