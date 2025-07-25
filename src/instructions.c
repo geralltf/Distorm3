@@ -94,7 +94,15 @@ static _InstInfo* inst_get_info(_InstNode in, int index)
 	if (in == INT_NOTEXISTS) return NULL;
 
 	instIndex = INST_NODE_INDEX(in);
-	return INST_NODE_TYPE(in) == INT_INFO ? &InstInfos[instIndex] : (_InstInfo*)&InstInfosEx[instIndex];
+
+	if (INST_NODE_TYPE(in) == INT_INFO)
+	{
+		return &InstInfos[instIndex];
+	}
+	else 
+	{
+		return (_InstInfo*)&InstInfosEx[instIndex];
+	}
 }
 
 /*
