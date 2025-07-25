@@ -425,7 +425,10 @@ int printRsrc(void* N, const resource& r) {
     return 0;
 }
 
-int printSecs(void* N,
+int printSecs(
+    parsed_pe* pe, 
+    int dt,
+    void* N,
     const VA& secBase,
     const std::string& secName,
     const image_section_header& s,
@@ -442,6 +445,114 @@ int printSecs(void* N,
         << "\n";
     return 0;
 }
+static _DecodedInst decodedInstructions[MAX_INSTRUCTIONS];
+void decode(unsigned char* buf, uint32_t buffer_size, uint64_t offset, _DecodeType dt)
+{
+    // Holds the result of the decoding.
+    _DecodeResult res;
+    // Decoded instruction information.
+    //_DecodedInst decodedInstructions[MAX_INSTRUCTIONS];
+    // next is used for instruction's offset synchronization.
+    // decodedInstructionsCount holds the count of filled instructions' array by the decoder.
+    unsigned int decodedInstructionsCount = 0;
+    unsigned int i, next;
+
+    std::cout << "distorm_decode(): " << std::endl;
+
+    //        // DECODER.
+    //        printf("bits: %d\nfilename: %s\norigin: ", dt == Decode16Bits ? 16 : dt == Decode32Bits ? 32 : 64, argv[param]);
+    //#ifdef SUPPORT_64BIT_OFFSET
+    //        if (dt != Decode64Bits) printf("%08I64x\n", offset);
+    //        else printf("%016I64x\n", offset);
+    //#else
+    //        printf("%08x\n", offset);
+    //#endif
+
+            // Decode the buffer at given offset (virtual address).
+            //while (1) {
+                // If you get an unresolved external symbol linker error for the following line,
+                // change the SUPPORT_64BIT_OFFSET in distorm.h.
+    res = distorm_decode(offset, (const unsigned char*)(buf), buffer_size, dt, decodedInstructions, MAX_INSTRUCTIONS, &decodedInstructionsCount);
+    if (res == DECRES_INPUTERR) {
+        // Null buffer? Decode type not 16/32/64?
+        printf("Input error, halting!");
+        //free(buf2);
+        return;
+    }
+
+    printf("decoding.. printing\n");
+    for (i = 0; i < decodedInstructionsCount; i++) {
+        //#ifdef SUPPORT_64BIT_OFFSET
+                    //printf("%0*I64x (%02d) %-24s %s%s%s\n", dt != Decode64Bits ? 8 : 16, decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
+        //#else
+        printf("%08x (%02d) %-24s %s%s%s\n", decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
+        //#endif
+    }
+    printf("decoding.. printing done.\n");
+    //if (res == DECRES_SUCCESS) break; // All instructions were decoded.
+    //else if (decodedInstructionsCount == 0) break;
+
+    // Synchronize:
+    //next = (unsigned long)(decodedInstructions[decodedInstructionsCount - 1].offset - offset);
+    //next += decodedInstructions[decodedInstructionsCount - 1].size;
+    // Advance ptr and recalc offset.
+    //buf += next;
+    //filesize -= next;
+    //offset += next;
+//}
+
+    //std::cout << std::endl;
+}
+
+int decodeSecs(parsed_pe* pe, int dt, void* N, const VA& secBase, const std::string& secName, const image_section_header& s, const bounded_buffer* data)
+{
+    _DecodeType dt_main = (_DecodeType)dt;
+
+    static_cast<void>(N);
+    static_cast<void>(s);
+    std::cout << "Decoding Section..." << std::endl;
+    std::cout << "Sec Name: " << secName << std::endl;
+    std::cout << "Sec Base: 0x" << std::hex << secBase << std::endl;
+    if (data) 
+    {
+        std::cout << "Sec Size: " << std::dec << data->bufLen << std::endl;
+
+        if (secName == ".text" || secName == "CODE")
+        {
+            uint32_t buffer_size;
+
+            buffer_size = data->bufLen;
+
+            size_t filesize = buffer_size;
+
+            uint64_t offset = secBase;
+
+            unsigned char* buf = (unsigned char*)malloc(sizeof(unsigned char) * buffer_size);
+
+            std::cout << "ReadBytesAtVA(): buffer_size: " << buffer_size << " secBase: " << secBase << std::endl;
+            if (ReadBytesAtVA(pe, secBase, buf, buffer_size))
+            {
+                std::cout << "ReadBytesAtVA(): worked " << std::endl;
+
+                // Run distorm3 decoder starting at the section virtual address 'secBase'.
+                decode(buf, buffer_size, secBase, dt_main);
+            }
+            else
+            {
+                std::cout << "ReadBytesAtVA(): did not work can not run decoder." << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "Section name is not .text or CODE where there may be instructions." << std::endl;
+        }
+    }
+    else 
+    {
+        std::cout << "Sec Size: 0. Can not run decoder." << std::endl;
+    }
+    return 0;
+}
 
 #define DUMP_FIELD(x)           \
   std::cout << "" #x << ": 0x"; \
@@ -453,7 +564,6 @@ int printSecs(void* N,
   std::cout << "" #x << ": "; \
   std::cout << std::boolalpha << static_cast<bool>(p->peHeader.x) << "\n";
 
-
 int main(int argc, char** argv)
 {
 	char* filename;
@@ -461,27 +571,20 @@ int main(int argc, char** argv)
 
 	// Version of used compiled library.
 	unsigned long dver = 0;
-	// Holds the result of the decoding.
-	_DecodeResult res;
-	// Decoded instruction information.
-	_DecodedInst decodedInstructions[MAX_INSTRUCTIONS];
-	// next is used for instruction's offset synchronization.
-	// decodedInstructionsCount holds the count of filled instructions' array by the decoder.
-	unsigned int decodedInstructionsCount = 0;
-	unsigned int i, next;
 
-	// Default decoding mode is 32 bits, could be set by command line.
-	_DecodeType dt = Decode32Bits;
+    // Default decoding mode is 32 bits, could be set by command line.
+    _DecodeType dt = Decode32Bits;
 
-	// Default offset for buffer is 0, could be set in command line.
-	_OffsetType offset = 0;
-	char* errch = NULL;
+    // Default offset for buffer is 0, could be set in command line.
+    _OffsetType offset = 0;
 
-	// Index to file name in argv.
-	int param = 1;
+    // Index to file name in argv.
+    int param = 1;
 
-	// Buffer to disassemble.
-	unsigned char* buf, * buf2;
+    char* errch = NULL;
+
+    // Buffer to disassemble.
+    unsigned char* buf, * buf2;
 
 	// Disassembler version.
 	dver = distorm_version();
@@ -676,13 +779,13 @@ int main(int argc, char** argv)
         IterSymbols(p, printSymbols, NULL);
         std::cout << "Sections: "
             << "\n";
-        IterSec(p, printSecs, NULL);
+        IterSec(p, (int)(dt), printSecs, NULL);
         std::cout << "Exports: "
             << "\n";
         IterExpFull(p, printExps, NULL);
 
         // read the first 8 bytes from the entry point and print them
-        VA entryPoint;
+        VA entryPoint = NULL;
         if (GetEntryPoint(p, entryPoint)) {
             std::cout << "First 8 bytes from entry point (0x";
             std::cout << std::hex << entryPoint << "):"
@@ -705,76 +808,36 @@ int main(int argc, char** argv)
 
         //////////////////////////// diStorm 3 merged with pe_parser ////////////////////////////
 
-        uint32_t buffer_size;
-
-        std::cout << "ReadSectionSize(): " << std::endl;
-        buffer_size = ReadSectionSize(p, entryPoint);
-
-        filesize = buffer_size;
-
-
-
-        buf = (unsigned char*)malloc(sizeof(unsigned char) * buffer_size);
-
-        std::cout << "ReadBytesAtVA(): buffer_size: " << buffer_size << " entryPoint: " << entryPoint << std::endl;
-        if (ReadBytesAtVA(p, entryPoint, buf, buffer_size))
+        if (entryPoint != NULL)
         {
-            std::cout << "ReadBytesAtVA(): worked " << std::endl;
-        }
-        else 
-        {
-            std::cout << "ReadBytesAtVA(): did not work " << std::endl;
-        }
-        offset = entryPoint;
+            uint32_t buffer_size;
 
-        //std::cout << std::endl;
+            std::cout << "ReadSectionSize(): " << std::endl;
+            buffer_size = ReadSectionSize(p, entryPoint);
 
-        std::cout << "distorm_decode(): " << std::endl;
+            filesize = buffer_size;
 
-//        // DECODER.
-//        printf("bits: %d\nfilename: %s\norigin: ", dt == Decode16Bits ? 16 : dt == Decode32Bits ? 32 : 64, argv[param]);
-//#ifdef SUPPORT_64BIT_OFFSET
-//        if (dt != Decode64Bits) printf("%08I64x\n", offset);
-//        else printf("%016I64x\n", offset);
-//#else
-//        printf("%08x\n", offset);
-//#endif
+            offset = entryPoint;
 
-        // Decode the buffer at given offset (virtual address).
-        //while (1) {
-            // If you get an unresolved external symbol linker error for the following line,
-            // change the SUPPORT_64BIT_OFFSET in distorm.h.
-            res = distorm_decode(offset, (const unsigned char*)(buf), filesize, dt, decodedInstructions, MAX_INSTRUCTIONS, &decodedInstructionsCount);
-            if (res == DECRES_INPUTERR) {
-                // Null buffer? Decode type not 16/32/64?
-                printf("Input error, halting!");
-                //free(buf2);
-                return -4;
+            buf = (unsigned char*)malloc(sizeof(unsigned char) * buffer_size);
+
+            std::cout << "ReadBytesAtVA(): buffer_size: " << buffer_size << " entryPoint: " << entryPoint << std::endl;
+            if (ReadBytesAtVA(p, entryPoint, buf, buffer_size))
+            {
+                std::cout << "ReadBytesAtVA(): worked " << std::endl;
+            }
+            else
+            {
+                std::cout << "ReadBytesAtVA(): did not work " << std::endl;
             }
 
-            printf("decoding.. printing\n");
-            for (i = 0; i < decodedInstructionsCount; i++) {
-    //#ifdef SUPPORT_64BIT_OFFSET
-                //printf("%0*I64x (%02d) %-24s %s%s%s\n", dt != Decode64Bits ? 8 : 16, decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
-    //#else
-                printf("%08x (%02d) %-24s %s%s%s\n", decodedInstructions[i].offset, decodedInstructions[i].size, (char*)decodedInstructions[i].instructionHex.p, (char*)decodedInstructions[i].mnemonic.p, decodedInstructions[i].operands.length != 0 ? " " : "", (char*)decodedInstructions[i].operands.p);
-    //#endif
-            }
-            printf("decoding.. printing done.\n");
-            //if (res == DECRES_SUCCESS) break; // All instructions were decoded.
-            //else if (decodedInstructionsCount == 0) break;
+            decode(buf, buffer_size, offset, dt);
 
-            // Synchronize:
-            //next = (unsigned long)(decodedInstructions[decodedInstructionsCount - 1].offset - offset);
-            //next += decodedInstructions[decodedInstructionsCount - 1].size;
-            // Advance ptr and recalc offset.
-            //buf += next;
-            //filesize -= next;
-            //offset += next;
-        //}
+            // Release buffer
+            free(buf);
+        }
 
-        // Release buffer
-        free(buf);
+        IterSec(p, (int)(dt), decodeSecs, NULL);
 
         DestructParsedPE(p);
     }

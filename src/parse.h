@@ -257,12 +257,14 @@ namespace peparse {
     void IterExpFull(parsed_pe* pe, iterExpFull cb, void* cbd);
 
     // iterate over sections
-    typedef int (*iterSec)(void*,
+    typedef int (*iterSec)(parsed_pe*, 
+        int,
+        void*,
         const VA&,
         const std::string&,
         const image_section_header&,
         const bounded_buffer*);
-    void IterSec(parsed_pe* pe, iterSec cb, void* cbd);
+    void IterSec(parsed_pe* pe, int dt, iterSec cb, void* cbd);
 
     // get byte at VA in PE
     bool ReadByteAtVA(parsed_pe* pe, VA v, std::uint8_t& b);

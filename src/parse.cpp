@@ -2785,11 +2785,11 @@ namespace peparse {
     }
 
     // iterate over sections
-    void IterSec(parsed_pe* pe, iterSec cb, void* cbd) {
+    void IterSec(parsed_pe* pe, int dt, iterSec cb, void* cbd) {
         parsed_pe_internal* pint = pe->internal;
 
         for (section& s : pint->secs) {
-            if (cb(cbd, s.sectionBase, s.sectionName, s.sec, s.sectionData) != 0) {
+            if (cb(pe, dt, cbd, s.sectionBase, s.sectionName, s.sec, s.sectionData) != 0) {
                 break;
             }
         }
