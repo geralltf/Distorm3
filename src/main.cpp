@@ -55,7 +55,7 @@ using namespace peparse;
 
 // The number of the array of instructions the decoder function will use to return the disassembled instructions.
 // Play with this value for performance...
-#define MAX_INSTRUCTIONS (1000)
+#define MAX_INSTRUCTIONS (1000000)
 
 typedef unsigned char       BYTE;
 #define IMAGE_SYM_CLASS_END_OF_FUNCTION     (BYTE )-1
